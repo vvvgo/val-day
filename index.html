@@ -184,6 +184,7 @@
         let playerPosition = window.innerWidth / 2;
         let isMovingLeft = false;
         let isMovingRight = false;
+        let gameOver = false;
 
         // Массив комплиментов
         const loveMessages = [
@@ -201,17 +202,18 @@
             "Ты неповторима! ⭐"
         ];
 
+        // Достижения
         const achievements = {
             5: {
                 text: "⭐ Дашуль ⭐<br>Как хорошо ты ловишь поцелуи!))",
                 emoji: "🌟"
             },
             10: {
-                text: "💖 Просто вау! 💖<br>Горжусь тобой!",
+                text: "💖 Просто вау! 💖<br>Еще немного!",
                 emoji: "🎉"
             },
             15: {
-                text: "🏆 Моя абсолютная шампиньонка любви!🏆!",
+                text: "Ты победила, моя шампиньонка! Не могу дождаться, как завтра мы отпразднуем этот день вместе",
                 emoji: "👑"
             }
         };
@@ -279,6 +281,7 @@
         }
 
         function createKiss() {
+            if (gameOver) return;
             const kiss = document.createElement('div');
             kiss.innerHTML = '💋';
             kiss.style.fontSize = window.innerWidth < 768 ? '2rem' : '3rem';
@@ -303,6 +306,13 @@
 
                     if (achievements[score]) {
                         showAchievement(achievements[score]);
+                        if (score === 15) {
+                            // Завершение игры
+                            gameOver = true;
+                            clearInterval(kissInterval);
+                            clearInterval(emojiInterval);
+                            showMessage("Игра окончена!");
+                        }
                     }
                 }
 
@@ -327,6 +337,7 @@
         }
 
         function createFloatingEmoji() {
+            if (gameOver) return;
             const emojis = ['💝', '💕', '💖', '🌸', '✨', '💗'];
             const emoji = document.createElement('div');
             emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
@@ -348,8 +359,8 @@
 
         // Настройка скорости игры в зависимости от размера экрана
         const gameSpeed = window.innerWidth < 768 ? 2500 : 2000;
-        setInterval(createKiss, gameSpeed);
-        setInterval(createFloatingEmoji, 1000);
+        const kissInterval = setInterval(createKiss, gameSpeed);
+        const emojiInterval = setInterval(createFloatingEmoji, 1000);
 
         // Обработка изменения размера окна (без ограничений)
         window.addEventListener('resize', () => {
